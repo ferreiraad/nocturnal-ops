@@ -74,6 +74,7 @@ func (ctr *Controller) CreateNamespace(c *fiber.Ctx) error {
 
 // ListNamespaces lists all namespaces in Datastore
 func (ctr *Controller) ListNamespaces(c *fiber.Ctx) error {
+	println("ListNamespaces")
 	ctx := context.Background()
 	var namespaces []string
 

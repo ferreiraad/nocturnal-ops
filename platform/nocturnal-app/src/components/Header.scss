@@ -1,0 +1,46 @@
+@use '../variables.scss' as *; 
+
+.nav-wrapper {
+  background-color: $bg-header-footer;
+  padding-left: 10px;
+  ul li a {
+    color: $sidenav-bg-color;
+  }
+};
+
+.sidenav.right-aligned {
+  background-color: $sidenav-bg-color;
+  color: white; // Set text color for contrast
+}
+
+nav {
+  vertical-align: top;
+  img {
+    width: 60px;
+    height: auto;
+  }
+  .brand-logo {
+    color: $sidenav-bg-color !important;
+  }
+}
+
+// Optional: style sidenav links
+.sidenav.right-aligned li a {
+  color: orange;
+}
+
+.sidenav-title {
+  font-size: 10pt;
+  font-weight: bold;
+  padding-left: 3px;
+  background-color: orange;
+  color: #333;
+  text-transform: uppercase;
+  height: 25pt;
+  // &{
+  //   background-color: red;
+  //   height: 22px;
+  //   vertical-align: top;
+  // }
+
+}

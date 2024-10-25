@@ -30,6 +30,7 @@ func main() {
 
 	app.Get("/entities/:namespace/:kind", controller.ListEntitiesWithLimit)
 	app.Get("/entities/:namespace/:kind/:key", controller.GetEntityByKey)
+	app.Post("/entities/filter/:namespace/:kind", controller.FilterEntitiesByFields)
 	app.Post("/entities", controller.CreateEntityWithData)
 	app.Put("/entities/:namespace/:kind/:id", controller.UpdateEntityByID)
 	app.Delete("/entities/:namespace/:kind/:id", controller.DeleteEntityByID)

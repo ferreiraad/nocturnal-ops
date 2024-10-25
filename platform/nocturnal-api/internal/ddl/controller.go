@@ -472,3 +472,75 @@ func (ctr *Controller) DeleteEntityByID(c *fiber.Ctx) error {
 		"message": fmt.Sprintf("Entity with ID '%d' of kind '%s' deleted successfully from namespace '%s'", id, kind, namespace),
 	})
 }
+
+// FilterEntitiesByFields filters entities based on key-value pairs provided in the request body with an optional limit
+func (ctr *Controller) FilterEntitiesByFields(c *fiber.Ctx) error {
+	ctx := context.Background()
+
+	// Get the namespace and kind from the path parameters
+	namespace := c.Params("namespace")
+	kind := c.Params("kind")
+	if namespace == "" || kind == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Namespace and kind are required"})
+	}
+
+	// Get the limit from the query parameter, with a maximum of 250
+	limit := c.QueryInt("limit", 10)
+	if limit > 250 {
+		limit = 250
+	} else if limit <= 0 {
+		return c.Status(400).JSON(fiber.Map{"error": "Limit must be a positive integer"})
+	}
+
+	// Parse the filter conditions from the request body
+	type Filter struct {
+		Key   string      `json:"key"`
+		Value interface{} `json:"value"`
+	}
+	var filters []Filter
+	if err := c.BodyParser(&filters); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Cannot parse JSON", "details": err.Error()})
+	}
+
+	// Create the query with the specified kind, namespace, and limit
+	query := datastore.NewQuery(kind).Namespace(namespace).Limit(limit)
+
+	// Apply each filter using FilterField to the query
+	for _, filter := range filters {
+		query = query.FilterField(filter.Key, "=", filter.Value)
+	}
+
+	// Execute the query
+	var entities []datastore.PropertyList
+	keys, err := ctr.client.GetAll(ctx, query, &entities)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to retrieve entities", "details": err.Error()})
+	}
+
+	// Format the response to include only entities that have all filter fields
+	var results []fiber.Map
+	for i, key := range keys {
+		entityData := make(fiber.Map)
+		for _, property := range entities[i] {
+			entityData[property.Name] = property.Value
+		}
+
+		// Ensure entityData has all filter keys
+		includeEntity := true
+		for _, filter := range filters {
+			if value, exists := entityData[filter.Key]; !exists || value != filter.Value {
+				includeEntity = false
+				break
+			}
+		}
+
+		if includeEntity {
+			results = append(results, fiber.Map{
+				"key":  key.ID,
+				"data": entityData,
+			})
+		}
+	}
+
+	return c.JSON(fiber.Map{"entities": results})
+}

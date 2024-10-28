@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "625f48eb-822c-4fa0-bd24-24db770bb13a",
+		"name": "NocturnalOps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26331605"
+	},
+	"item": [
+		{
+			"name": "Management",
+			"item": [
+				{
+					"name": "namespace",
+					"item": [
+						{
+							"name": "list-namespace",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/namespaces",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"namespaces"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-namespace",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"namespace\": \"exampleNamespace002\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9000/namespaces",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"namespaces"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "kind",
+					"item": [
+						{
+							"name": "list-kinds",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/kinds/:namespace",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"kinds",
+										":namespace"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-kind",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/kinds/:namespace/:kind",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"kinds",
+										":namespace",
+										":kind"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "NamespacePlaceholder"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "entities",
+					"item": [
+						{
+							"name": "list-entity",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/entities/:namespace/:kind?limit=5",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities",
+										":namespace",
+										":kind"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "Product"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-entity",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/entities/:namespace/:kind/:key",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities",
+										":namespace",
+										":kind",
+										":key"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "Product"
+										},
+										{
+											"key": "key",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "filter-entity",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n  {\n    \"key\": \"group\",\n    \"value\": 10\n  }\n]\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9000/entities/filter/:namespace/:kind?limit=5",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities",
+										"filter",
+										":namespace",
+										":kind"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "Product"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create-entity",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"namespace\": \"exampleNamespace001\",\n  \"kind\": \"Product\",\n  \"data\": {\n    \"name\": \"Sample Product\",\n    \"description\": \"Test\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9000/entities",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update-entity",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Sample Product\",\n    \"description\": \"Test\",\n    \"group\": 10\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:9000/entities/:namespace/:kind/:key",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities",
+										":namespace",
+										":kind",
+										":key"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "Product"
+										},
+										{
+											"key": "key",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete-entity",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:9000/entities/:namespace/:kind/:key",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "9000",
+									"path": [
+										"entities",
+										":namespace",
+										":kind",
+										":key"
+									],
+									"variable": [
+										{
+											"key": "namespace",
+											"value": "exampleNamespace001"
+										},
+										{
+											"key": "kind",
+											"value": "Product"
+										},
+										{
+											"key": "key",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

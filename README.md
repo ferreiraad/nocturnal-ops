@@ -10,8 +10,4 @@ To run:
 2. docker compose up -d nocturnal-gcp-datastore --remove-orphans 
 3. VCCODE Run & Debug launch local configuration to run the Go Backend API
 4. Open terminal in folder platform/nocturnal-app and run npm start
-
-
-
-
-
+5. Import to your postman the platform/infrastructure/postman/NocturnalOps.postman_collection.json

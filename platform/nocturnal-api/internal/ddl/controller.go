@@ -104,8 +104,30 @@ type EntityDefinition struct {
 	Fields    map[string]string `json:"fields"`
 }
 
+func (ctr *Controller) ListKinds(c *fiber.Ctx) error {
+	ctx := context.Background()
+	var kindsWithNamespace []fiber.Map
+
+	// Query for all kinds globally using __kind__ kind
+	query := datastore.NewQuery("__kind__").KeysOnly()
+	keys, err := ctr.client.GetAll(ctx, query, nil)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to retrieve entity kinds"})
+	}
+
+	// Extract kind names and namespaces from the keys
+	for _, key := range keys {
+		kindsWithNamespace = append(kindsWithNamespace, fiber.Map{
+			"namespace": key.Namespace,
+			"kind":      key.Name,
+		})
+	}
+
+	return c.JSON(fiber.Map{"kinds": kindsWithNamespace})
+}
+
 // ListEntities lists all entity kinds within a specific namespace
-func (ctr *Controller) ListEntities(c *fiber.Ctx) error {
+func (ctr *Controller) ListKindByNamespace(c *fiber.Ctx) error {
 	ctx := context.Background()
 	var kinds []string
 
@@ -298,12 +320,14 @@ func (ctr *Controller) DeleteKind(c *fiber.Ctx) error {
 func (ctr *Controller) ListEntitiesWithLimit(c *fiber.Ctx) error {
 	ctx := context.Background()
 
-	// Get the namespace and kind from the path parameters
-	namespace := c.Params("namespace")
+	// Get the kind from the path parameters
 	kind := c.Params("kind")
-	if namespace == "" || kind == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Namespace and kind are required"})
+	if kind == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Kind is required"})
 	}
+
+	// Get the namespace from the path parameter (optional)
+	namespace := c.Params("namespace")
 
 	// Get the limit from the query parameter (optional, default to 10)
 	limit := c.QueryInt("limit", 10)
@@ -311,8 +335,14 @@ func (ctr *Controller) ListEntitiesWithLimit(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Limit must be a positive integer"})
 	}
 
-	// Query for the specified kind within the namespace and apply the limit
-	query := datastore.NewQuery(kind).Namespace(namespace).Limit(limit)
+	// Create the query for the specified kind and apply the limit
+	query := datastore.NewQuery(kind).Limit(limit)
+
+	// Apply the namespace only if it is not "default"
+	if namespace != "default" && namespace != "" {
+		query = query.Namespace(namespace)
+	}
+
 	var entities []datastore.PropertyList
 	keys, err := ctr.client.GetAll(ctx, query, &entities)
 	if err != nil {
@@ -327,7 +357,7 @@ func (ctr *Controller) ListEntitiesWithLimit(c *fiber.Ctx) error {
 			entityData[property.Name] = property.Value
 		}
 		results = append(results, fiber.Map{
-			"key":  key.ID, // Use key.Name if key.ID is zero (for named keys)
+			"key":  key.Name, // Use key.ID if key.Name is zero (for numeric IDs)
 			"data": entityData,
 		})
 	}
